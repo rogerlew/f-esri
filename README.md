@@ -21,39 +21,72 @@ Library versions:
 sudo docker image build --tag f_esri .
 ```
 
-# Usage
+# GDAL Grande: FileGDB Conversion Examples
 
-Example command to dump a PostgreSQL database query to GeoPackage:
+This document provides usage and conversion examples for using GDAL to convert OGC GeoPackage files (`.gpkg`) to ESRI File Geodatabase (`.gdb`) format.
 
-```bash
-docker container run -v `pwd`:/out ghcr.io/dbca-wa/gdal-grande \
-ogr2ogr -progress -f "GPKG" /out/<table_name>.gpkg \
-PG:"host=<dbhost> user=<username> dbname=<dbname> password=<pw>" \
--sql "SELECT * FROM <tablename>" -nlt POLYGON -nln <table_name>
-```
+## Requirements
 
-Example command to dump a PostgreSQL database query to file geodatabase:
+Before starting, ensure you have the `gdal-grande` Docker image built and ready to use. This image supports the ESRI FileGDB format.
 
-```bash
-docker container run -v `pwd`:/out ghcr.io/dbca-wa/gdal-grande \
-ogr2ogr -progress -f "FileGDB" /out/<table_name>.gdb \
-PG:"host=<dbhost> user=<username> dbname=<dbname> password=<pw>" \
--sql "SELECT * FROM <tablename>" -nlt POLYGON -nln <table_name>
-```
+### Check GDAL FileGDB Support
 
-Dump an Oracle table to Excel spreadsheet:
+To ensure that the GDAL installation in the Docker image has FileGDB write support, run the following command:
 
 ```bash
-docker container run -v `pwd`:/out ghcr.io/dbca-wa/gdal-grande \
-ogr2ogr -progress -overwrite -f "XLSX" /out/out.xlsx \
-OCI:"<oracle user>/<oracle password>@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=<hostname>)(PORT=<port number>)))(CONNECT_DATA=(SID =<sid name>))):<oracle schema>.<oracle table>"
+docker run --rm f_esri ogrinfo --formats | grep -i "FileGDB"
 ```
 
-Copy an Oracle database table to PostgreSQL:
+Expected output:
+
+```
+  OpenFileGDB -vector- (rov): ESRI FileGDB
+  FileGDB -vector- (rw+v): ESRI FileGDB
+```
+
+The `rw+v` indicates that FileGDB writing is supported.
+
+## Basic GeoPackage to FileGDB Conversion
+
+To convert an OGC GeoPackage (`.gpkg`) to FileGDB (`.gdb`), run the following command:
 
 ```bash
-docker container run ghcr.io/dbca-wa/gdal-grande \
-ogr2ogr -a_srs EPSG:4326 -overwrite -f "PostgreSQL" -nln <postgis schema>.<postgis table> \
-PG:"host=<postgis host> user=<postgis user> password=<postgis password> dbname=<postgis database>" \
-OCI:"<oracle user>/<oracle password>@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=<hostname>)(PORT=<port number>)))(CONNECT_DATA=(SID =<sid name>))):<oracle schema>.<oracle table>"
+docker run --rm -v $(pwd):/data f_esri ogr2ogr -f "FileGDB" /data/output.gdb /data/input.gpkg
 ```
+
+### Explanation:
+- `$(pwd):/data`: Mounts the current directory into the Docker container's `/data` directory.
+- `/data/input.gpkg`: The input GeoPackage file.
+- `/data/output.gdb`: The output FileGDB directory.
+
+After the conversion, `output.gdb` will be created in the current directory as a File Geodatabase.
+
+### List Layers in the Output FileGDB
+
+To verify the contents of the newly created FileGDB:
+
+```bash
+docker run --rm -v $(pwd):/data f_esri ogrinfo /data/output.gdb
+```
+
+This command lists the layers and metadata of the FileGDB.
+
+## Sharing FileGDB
+
+Since a `.gdb` is a directory containing multiple files, it is recommended to zip the entire `.gdb` folder for sharing:
+
+### On Linux/MacOS:
+```bash
+zip -r output.gdb.zip output.gdb
+```
+
+### On Windows:
+Right-click the `output.gdb` folder and select **Send to → Compressed (zipped) folder**.
+
+The recipient can then unzip the folder and use it in GIS software like ArcGIS or QGIS.
+
+## Additional Notes
+
+- Ensure that the full `.gdb` directory is included when zipping or sharing the FileGDB, as missing files may result in an incomplete or corrupted geodatabase.
+- If you're using FileGDB for sharing or long-term storage, consider its compatibility limitations compared to open formats like GeoPackage.
+
