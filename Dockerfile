@@ -20,18 +20,6 @@ RUN apt-get install -y --fix-missing --no-install-recommends \
             libzstd-dev
 ARG PROJ_INSTALL_PREFIX=/usr/local
 
-# Install the Oracle client so that we can compile GDAL with OCI driver support.
-ARG ORACLECLIENT_VERSION=19.6
-COPY *.rpm ./
-RUN alien -i oracle-instantclient${ORACLECLIENT_VERSION}-basic-${ORACLECLIENT_VERSION}.0.0.0-1.x86_64.rpm \
-    && alien -i oracle-instantclient${ORACLECLIENT_VERSION}-sqlplus-${ORACLECLIENT_VERSION}.0.0.0-1.x86_64.rpm \
-    && alien -i oracle-instantclient${ORACLECLIENT_VERSION}-devel-${ORACLECLIENT_VERSION}.0.0.0-1.x86_64.rpm \
-    && rm /*.rpm \
-    && cp /usr/include/oracle/${ORACLECLIENT_VERSION}/client64/*.h /usr/include/
-COPY tnsnames.ora /usr/lib/oracle/${ORACLECLIENT_VERSION}/client64/lib/network/admin/
-ENV ORACLE_HOME=/usr/lib/oracle/${ORACLECLIENT_VERSION}/client64
-ENV LD_LIBRARY_PATH=/usr/lib/oracle/${ORACLECLIENT_VERSION}/client64/lib:$LD_LIBRARY_PATH
-
 # Build openjpeg
 ARG OPENJPEG_VERSION=2.3.1
 RUN if test "${OPENJPEG_VERSION}" != ""; then ( \
@@ -160,18 +148,6 @@ COPY --from=builder  /build/usr/share/gdal/ /usr/share/gdal/
 COPY --from=builder  /build/usr/include/ /usr/include/
 COPY --from=builder  /build_gdal_version_changing/usr/ /usr/
 RUN (for so in /usr/share/gdal/libso/*.so; do ln -s $so /usr/lib/; done)
-
-# Reinstall the Oracle client
-ARG ORACLECLIENT_VERSION=19.6
-COPY *.rpm ./
-RUN alien -i oracle-instantclient${ORACLECLIENT_VERSION}-basic-${ORACLECLIENT_VERSION}.0.0.0-1.x86_64.rpm \
-    && alien -i oracle-instantclient${ORACLECLIENT_VERSION}-sqlplus-${ORACLECLIENT_VERSION}.0.0.0-1.x86_64.rpm \
-    && alien -i oracle-instantclient${ORACLECLIENT_VERSION}-devel-${ORACLECLIENT_VERSION}.0.0.0-1.x86_64.rpm \
-    && rm /*.rpm \
-    && cp /usr/include/oracle/${ORACLECLIENT_VERSION}/client64/*.h /usr/include/
-COPY tnsnames.ora /usr/lib/oracle/${ORACLECLIENT_VERSION}/client64/lib/network/admin/
-ENV ORACLE_HOME=/usr/lib/oracle/${ORACLECLIENT_VERSION}/client64
-ENV LD_LIBRARY_PATH=/usr/lib/oracle/${ORACLECLIENT_VERSION}/client64/lib:$LD_LIBRARY_PATH
 
 RUN ldconfig -v
 
