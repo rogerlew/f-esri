@@ -15,7 +15,11 @@ Library versions:
 
 # Build new image
 
-1. Run `docker image build --tag f_esri .`
+1. Run
+
+```bash
+sudo docker image build --tag f_esri .
+```
 
 # Usage
 
