@@ -1,9 +1,9 @@
-# gdal-grande
+# f-esri
 
 Ubuntu base Docker image with GDAL compiled with ESRI FileGDB write support <strike>and Oracle (OCI)</strike>
 driver support.
 
-Dockerfile based on https://github.com/haies/gdal
+This is a fork of https://github.com/dbca-wa/gdal-grande which is based on https://github.com/haies/gdal
 
 Ubuntu version: 20.04 (Focal)
 
