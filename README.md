@@ -15,9 +15,16 @@ Library versions:
 
 # Build new image
 
-1. Run
+1. Clone
+```
+cd /workdir
+git clone https://github.com/rogerlew/f-esri/
+```
+
+2. Build
 
 ```bash
+cd /workdir/f-esri
 sudo docker image build --tag f_esri .
 ```
 
