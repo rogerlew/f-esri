@@ -1,6 +1,6 @@
 # gdal-grande
 
-Ubuntu base Docker image with GDAL compiled with ESRI FileGDB <strike>and Oracle (OCI)</strike>
+Ubuntu base Docker image with GDAL compiled with ESRI FileGDB write support <strike>and Oracle (OCI)</strike>
 driver support.
 
 Dockerfile based on https://github.com/haies/gdal
@@ -83,6 +83,18 @@ To convert an OGC GeoPackage (`.gpkg`) to FileGDB (`.gdb`), run the following co
 ```bash
 docker run --rm -v $(pwd):/data f_esri ogr2ogr -f "FileGDB" /data/output.gdb /data/input.gpkg
 ```
+
+The f_esri python module provides subprocess wrapper to use docker image for conversion
+
+```python
+import f_esri
+
+if f_esri.has_f_esri():
+    f_esri.gpkg_to_gdb("/path/to/input.gpkg", "path/to/output.gdb")
+```
+
+the `gpkg_to_gdb` function will delete the output.gdb if it exists. it will also create a zip of the geodatabase folder
+
 
 ### Explanation:
 - `$(pwd):/data`: Mounts the current directory into the Docker container's `/data` directory.
