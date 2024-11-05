@@ -1,6 +1,6 @@
 # gdal-grande
 
-Ubuntu base Docker image with GDAL compiled with ESRI FileGDB and Oracle (OCI)
+Ubuntu base Docker image with GDAL compiled with ESRI FileGDB <strike>and Oracle (OCI)</strike>
 driver support.
 
 Dockerfile based on https://github.com/haies/gdal
