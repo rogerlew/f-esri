@@ -28,6 +28,29 @@ cd /workdir/f-esri
 sudo docker image build --tag f_esri .
 ```
 
+3. Add f_esri module to dist-packages as .pth
+
+```bash
+echo "/workdir/f-esri/" | sudo tee -a /usr/lib/python3/dist-packages/f_esri.pth
+```
+
+4. Configure `www-data` user for docker
+
+```bash
+sudo usermod -aG docker www-data
+sudo systemctl restart docker
+```
+
+```bash
+sudo visudo
+```
+
+add this line:
+
+```
+www-data ALL=(ALL) NOPASSWD: /usr/bin/docker
+```
+
 # GDAL Grande: FileGDB Conversion Examples
 
 This document provides usage and conversion examples for using GDAL to convert OGC GeoPackage files (`.gpkg`) to ESRI File Geodatabase (`.gdb`) format.
