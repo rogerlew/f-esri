@@ -34,6 +34,11 @@ sudo docker image build --tag f_esri .
 echo "/workdir/f-esri/" | sudo tee -a /usr/lib/python3/dist-packages/f_esri.pth
 ```
 
+_wepppy310-env conda environment_
+```bash
+echo "/workdir/f-esri/" | sudo tee -a /workdir/miniconda3/envs/wepppy310-env/lib/python3.10/site-packages/f_esri.pth
+```
+
 4. Configure `www-data` user for docker
 
 ```bash
