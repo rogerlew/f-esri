@@ -51,10 +51,11 @@ sudo systemctl restart docker
 sudo visudo
 ```
 
-add this line:
+add these line:
 
 ```
 www-data ALL=(ALL) NOPASSWD: /usr/bin/docker
+www-data ALL=(ALL) NOPASSWD: /bin/chown
 ```
 
 # GDAL Grande: FileGDB Conversion Examples
